@@ -18,57 +18,69 @@
  */
 package org.apache.bval.bench.benchmarks;
 
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 
 import org.apache.bval.bench.generated.Holder;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.TearDown;
 import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 
 /**
- * Tests the speed of validating beans that are already parsed.
+ * Tests the speed of parsing beans without performing any validation.
  */
-public class RawValidationSpeedBenchmark {
+public class ParsingBeansSpeedBenchmark {
 
 	@State(Scope.Benchmark)
-	public static class RawValidationSpeedState {
+	public static class ParsingBeansSpeedState {
 
-		public volatile Validator validator;
+		public Holder holder;
+		public Validator validator;
+		private ValidatorFactory validatorFactory;
 
-		public volatile Holder holder;
-
-		public RawValidationSpeedState() {
-			ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-			validator = factory.getValidator();
+		public ParsingBeansSpeedState() {
 			holder = new Holder();
 		}
+
+		@Setup(Level.Iteration)
+		public void setup() {
+			validatorFactory = Validation.buildDefaultValidatorFactory();
+			validator = validatorFactory.getValidator();
+		}
+
+		@TearDown(Level.Iteration)
+		public void teardown() {
+			validatorFactory.close();
+		}
+
 	}
 
 	@Benchmark
 	@BenchmarkMode(Mode.Throughput)
-	@OutputTimeUnit(TimeUnit.SECONDS)
+	@OutputTimeUnit(TimeUnit.MILLISECONDS)
 	@Fork(value = 1)
-	@Threads(50)
-	@Warmup(iterations = 20) // it seems that as there are a lot of beans it takes some time to warmup
-	@Measurement(iterations = 30)
-	public void testCascadedValidation(RawValidationSpeedState state, Blackhole bh) {
+	@Threads(1)
+	@Warmup(iterations = 5, time = 5, timeUnit = TimeUnit.SECONDS)
+	@Measurement(iterations = 10, time = 5, timeUnit = TimeUnit.SECONDS)
+	public void testCascadedValidation(ParsingBeansSpeedState state, Blackhole bh) {
+		// Validator in new factory
+
 		for ( Object o : state.holder.beans ) {
-			Set<ConstraintViolation<Object>> constraintViolations = state.validator.validate( o );
-			bh.consume( constraintViolations );
+			bh.consume( state.validator.getConstraintsForClass( o.getClass() ).isBeanConstrained() );
 		}
 	}
 }

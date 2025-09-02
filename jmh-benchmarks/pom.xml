@@ -33,44 +33,32 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Bean validation provides and api versions -->
-		<apache-bval.version>1.1.2</apache-bval.version>
+        <apache-bval.version>1.1.2</apache-bval.version>
+        <apache-bval-3.0.version>3.0.2</apache-bval-3.0.version>
 		<hibernate-validator-5.4.version>5.4.2.Final</hibernate-validator-5.4.version>
 		<hibernate-validator-6.0-stable.version>6.0.10.Final</hibernate-validator-6.0-stable.version>
-		<hibernate-validator-6.1-snapshot.version>6.1.0-SNAPSHOT</hibernate-validator-6.1-snapshot.version>
+        <hibernate-validator-9.0-stable.version>9.0.1.Final</hibernate-validator-9.0-stable.version>
+        <hibernate-validator-9.1-alpha.version>9.1.0.Alpha1</hibernate-validator-9.1-alpha.version>
+        <hibernate-validator-current.version>9.1.0-SNAPSHOT</hibernate-validator-current.version>
 
 		<beanvalidation-1.1.version>1.1.0.Final</beanvalidation-1.1.version>
-		<beanvalidation-2.0.version>2.0.1.Final</beanvalidation-2.0.version>
+        <beanvalidation-2.0.version>2.0.1.Final</beanvalidation-2.0.version>
+        <beanvalidation-3.1.version>3.1.1</beanvalidation-3.1.version>
+
+        <expressly-6.version>6.0.0</expressly-6.version>
 
 		<!-- Plugin versions -->
 		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
 		<maven-shade-plugin.version>3.1.1</maven-shade-plugin.version>
 
 		<!-- Other dependencies versions -->
-		<jmh.version>1.21</jmh.version>
-	</properties>
+		<jmh.version>1.37</jmh.version>
+
+        <version.java.target>1.8</version.java.target>
+        <sources.to.add.main></sources.to.add.main>
+    </properties>
 
 	<dependencies>
-		<!-- generated beans -->
-		<dependency>
-			<groupId>org.hibernate.beanvalidation.benchmark</groupId>
-			<artifactId>bean-generator-bv-1.1</artifactId>
-			<version>${project.version}</version>
-			<classifier>tests</classifier>
-			<exclusions>
-				<exclusion>
-					<groupId>javax.validation</groupId>
-					<artifactId>validation-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<!--EL dependencies -->
-		<dependency>
-			<groupId>org.glassfish</groupId>
-			<artifactId>javax.el</artifactId>
-			<version>3.0.1-b09</version>
-		</dependency>
-
 		<!-- JMH dependencies -->
 		<dependency>
 			<groupId>org.openjdk.jmh</groupId>
@@ -92,8 +80,30 @@
 				<beanvalidation-impl.name>Apache BVal</beanvalidation-impl.name>
 				<beanvalidation-impl.short-name>bval-1.1</beanvalidation-impl.short-name>
 				<beanvalidation-impl.version>${apache-bval.version}</beanvalidation-impl.version>
+                <sources.to.add.main>${project.basedir}/src/main/javax</sources.to.add.main>
 			</properties>
 			<dependencies>
+                <!-- generated beans -->
+                <dependency>
+                    <groupId>org.hibernate.beanvalidation.benchmark</groupId>
+                    <artifactId>bean-generator-bv-1.1</artifactId>
+                    <version>${project.version}</version>
+                    <classifier>tests</classifier>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>javax.validation</groupId>
+                            <artifactId>validation-api</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+
+                <!--EL dependencies -->
+                <dependency>
+                    <groupId>org.glassfish</groupId>
+                    <artifactId>javax.el</artifactId>
+                    <version>3.0.1-b09</version>
+                </dependency>
+
 				<dependency>
 					<groupId>org.apache.bval</groupId>
 					<artifactId>org.apache.bval.bundle</artifactId>
@@ -106,14 +116,79 @@
 				</dependency>
 			</dependencies>
 		</profile>
+        <profile>
+            <id>bval-3.0</id>
+            <properties>
+                <beanvalidation-impl.name>Apache BVal</beanvalidation-impl.name>
+                <beanvalidation-impl.short-name>bval-3.0</beanvalidation-impl.short-name>
+                <beanvalidation-impl.version>${apache-bval-3.0.version}</beanvalidation-impl.version>
+                <sources.to.add.main>${project.basedir}/src/main/jakarta</sources.to.add.main>
+                <version.java.target>17</version.java.target>
+            </properties>
+            <dependencies>
+                <!-- generated beans -->
+                <dependency>
+                    <groupId>org.hibernate.beanvalidation.benchmark</groupId>
+                    <artifactId>bean-generator-bv-3.1</artifactId>
+                    <version>${project.version}</version>
+                    <classifier>tests</classifier>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>jakarta.validation</groupId>
+                            <artifactId>jakarta.validation-api</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+
+                <!--EL dependencies -->
+                <dependency>
+                    <groupId>org.glassfish.expressly</groupId>
+                    <artifactId>expressly</artifactId>
+                    <version>${expressly-6.version}</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.apache.bval</groupId>
+                    <artifactId>org.apache.bval.bundle</artifactId>
+                    <version>${beanvalidation-impl.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>jakarta.validation</groupId>
+                    <artifactId>jakarta.validation-api</artifactId>
+                    <version>${beanvalidation-3.1.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
 		<profile>
 			<id>hv-5.4</id>
 			<properties>
 				<beanvalidation-impl.name>Hibernate Validator</beanvalidation-impl.name>
 				<beanvalidation-impl.short-name>hv-5.4</beanvalidation-impl.short-name>
 				<beanvalidation-impl.version>${hibernate-validator-5.4.version}</beanvalidation-impl.version>
+                <sources.to.add.main>${project.basedir}/src/main/javax</sources.to.add.main>
 			</properties>
 			<dependencies>
+                <!-- generated beans -->
+                <dependency>
+                    <groupId>org.hibernate.beanvalidation.benchmark</groupId>
+                    <artifactId>bean-generator-bv-1.1</artifactId>
+                    <version>${project.version}</version>
+                    <classifier>tests</classifier>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>javax.validation</groupId>
+                            <artifactId>validation-api</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+
+                <!--EL dependencies -->
+                <dependency>
+                    <groupId>org.glassfish</groupId>
+                    <artifactId>javax.el</artifactId>
+                    <version>3.0.1-b09</version>
+                </dependency>
+
 				<dependency>
 					<groupId>org.hibernate</groupId>
 					<artifactId>hibernate-validator</artifactId>
@@ -132,8 +207,30 @@
 				<beanvalidation-impl.name>Hibernate Validator</beanvalidation-impl.name>
 				<beanvalidation-impl.short-name>hv-6.0</beanvalidation-impl.short-name>
 				<beanvalidation-impl.version>${hibernate-validator-6.0-stable.version}</beanvalidation-impl.version>
+                <sources.to.add.main>${project.basedir}/src/main/javax</sources.to.add.main>
 			</properties>
 			<dependencies>
+                <!-- generated beans -->
+                <dependency>
+                    <groupId>org.hibernate.beanvalidation.benchmark</groupId>
+                    <artifactId>bean-generator-bv-1.1</artifactId>
+                    <version>${project.version}</version>
+                    <classifier>tests</classifier>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>javax.validation</groupId>
+                            <artifactId>validation-api</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+
+                <!--EL dependencies -->
+                <dependency>
+                    <groupId>org.glassfish</groupId>
+                    <artifactId>javax.el</artifactId>
+                    <version>3.0.1-b09</version>
+                </dependency>
+
 				<dependency>
 					<groupId>org.hibernate.validator</groupId>
 					<artifactId>hibernate-validator</artifactId>
@@ -146,29 +243,138 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		<profile>
-			<id>hv-current</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<properties>
-				<beanvalidation-impl.name>Hibernate Validator</beanvalidation-impl.name>
-				<beanvalidation-impl.short-name>hv-current</beanvalidation-impl.short-name>
-				<beanvalidation-impl.version>${hibernate-validator-6.1-snapshot.version}</beanvalidation-impl.version>
-			</properties>
-			<dependencies>
-				<dependency>
-					<groupId>org.hibernate.validator</groupId>
-					<artifactId>hibernate-validator</artifactId>
-					<version>${hibernate-validator-6.1-snapshot.version}</version>
-				</dependency>
-				<dependency>
-					<groupId>javax.validation</groupId>
-					<artifactId>validation-api</artifactId>
-					<version>${beanvalidation-2.0.version}</version>
-				</dependency>
-			</dependencies>
-		</profile>
+        <profile>
+            <id>hv-9.0</id>
+            <properties>
+                <beanvalidation-impl.name>Hibernate Validator</beanvalidation-impl.name>
+                <beanvalidation-impl.short-name>hv-9.0</beanvalidation-impl.short-name>
+                <beanvalidation-impl.version>${hibernate-validator-9.0-stable.version}</beanvalidation-impl.version>
+                <sources.to.add.main>${project.basedir}/src/main/jakarta</sources.to.add.main>
+                <version.java.target>17</version.java.target>
+            </properties>
+            <dependencies>
+                <!-- generated beans -->
+                <dependency>
+                    <groupId>org.hibernate.beanvalidation.benchmark</groupId>
+                    <artifactId>bean-generator-bv-3.1</artifactId>
+                    <version>${project.version}</version>
+                    <classifier>tests</classifier>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>jakarta.validation</groupId>
+                            <artifactId>jakarta.validation-api</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+
+                <!--EL dependencies -->
+                <dependency>
+                    <groupId>org.glassfish.expressly</groupId>
+                    <artifactId>expressly</artifactId>
+                    <version>${expressly-6.version}</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.hibernate.validator</groupId>
+                    <artifactId>hibernate-validator</artifactId>
+                    <version>${beanvalidation-impl.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>jakarta.validation</groupId>
+                    <artifactId>jakarta.validation-api</artifactId>
+                    <version>${beanvalidation-3.1.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>hv-9.1</id>
+            <properties>
+                <beanvalidation-impl.name>Hibernate Validator</beanvalidation-impl.name>
+                <beanvalidation-impl.short-name>hv-9.1</beanvalidation-impl.short-name>
+                <beanvalidation-impl.version>${hibernate-validator-9.1-alpha.version}</beanvalidation-impl.version>
+                <sources.to.add.main>${project.basedir}/src/main/jakarta</sources.to.add.main>
+                <version.java.target>17</version.java.target>
+            </properties>
+            <dependencies>
+                <!-- generated beans -->
+                <dependency>
+                    <groupId>org.hibernate.beanvalidation.benchmark</groupId>
+                    <artifactId>bean-generator-bv-3.1</artifactId>
+                    <version>${project.version}</version>
+                    <classifier>tests</classifier>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>jakarta.validation</groupId>
+                            <artifactId>jakarta.validation-api</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+
+                <!--EL dependencies -->
+                <dependency>
+                    <groupId>org.glassfish.expressly</groupId>
+                    <artifactId>expressly</artifactId>
+                    <version>${expressly-6.version}</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.hibernate.validator</groupId>
+                    <artifactId>hibernate-validator</artifactId>
+                    <version>${beanvalidation-impl.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>jakarta.validation</groupId>
+                    <artifactId>jakarta.validation-api</artifactId>
+                    <version>${beanvalidation-3.1.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>hv-current</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <beanvalidation-impl.name>Hibernate Validator</beanvalidation-impl.name>
+                <beanvalidation-impl.short-name>hv-current</beanvalidation-impl.short-name>
+                <beanvalidation-impl.version>${hibernate-validator-current.version}</beanvalidation-impl.version>
+                <sources.to.add.main>${project.basedir}/src/main/jakarta</sources.to.add.main>
+                <version.java.target>17</version.java.target>
+            </properties>
+            <dependencies>
+                <!-- generated beans -->
+                <dependency>
+                    <groupId>org.hibernate.beanvalidation.benchmark</groupId>
+                    <artifactId>bean-generator-bv-3.1</artifactId>
+                    <version>${project.version}</version>
+                    <classifier>tests</classifier>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>jakarta.validation</groupId>
+                            <artifactId>jakarta.validation-api</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+
+                <!--EL dependencies -->
+                <dependency>
+                    <groupId>org.glassfish.expressly</groupId>
+                    <artifactId>expressly</artifactId>
+                    <version>${expressly-6.version}</version>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.hibernate.validator</groupId>
+                    <artifactId>hibernate-validator</artifactId>
+                    <version>${beanvalidation-impl.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>jakarta.validation</groupId>
+                    <artifactId>jakarta.validation-api</artifactId>
+                    <version>${beanvalidation-3.1.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
 	</profiles>
 
 	<build>
@@ -177,10 +383,28 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>${version.java.target}</source>
+					<target>${version.java.target}</target>
 				</configuration>
 			</plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${sources.to.add.main}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 			<!-- Create a runnable jar for JMH tests -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

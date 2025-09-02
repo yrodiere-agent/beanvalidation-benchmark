@@ -10,12 +10,15 @@ It is licensed under the Apache 2 license.
 
 ## Implementations available
 
-| Implementation      | Version          | Profile name      |
-|---------------------|------------------|-------------------|
-| Apache BVal         | `1.1.2`          | `bval`            |
-| Hibernate Validator | `5.4.2.Final`    | `hv-5.4`          |
-| Hibernate Validator | `6.0.10.Final`   | `hv-6.0`          |
-| Hibernate Validator | `6.1.0-SNAPSHOT` | `hv-current`      |
+| Implementation      | Version          | Profile name |
+|---------------------|------------------|--------------|
+| Apache BVal         | `1.1.2`          | `bval-1.1`   |
+| Apache BVal         | `3.0.2`          | `bval-3.0`   |
+| Hibernate Validator | `5.4.2.Final`    | `hv-5.4`     |
+| Hibernate Validator | `6.0.10.Final`   | `hv-6.0`     |
+| Hibernate Validator | `9.0.1.Final`    | `hv-9.0`     |
+| Hibernate Validator | `9.1.0.Alpha1`   | `hv-9.1`     |
+| Hibernate Validator | `9.1.0-SNAPSHOT` | `hv-current` |
 
 ## Generating the beans
 
@@ -23,20 +26,20 @@ It is licensed under the Apache 2 license.
 
 To execute a benchmark, a scenario is required.
 
-A scenario is a property file located at the root directory of the `bean-generator-bv-1.1` module and called `scenario.properties`.
+A scenario is a property file located at the root directory of the `bean-generator-bv-*.*` module and called `scenario.properties`.
 
-A default scenario file can be found at `bean-generator-bv-1.1/src/main/resources/generator.default.properties`.
+A default scenario file can be found at `bean-generator-bv-*.*/src/main/resources/generator.default.properties`.
 
 If you don't define a specific scenario, the default one is used.
 
 ### Generating the beans
 
-Once your scenario is in place in the `bean-generator-bv-1.1` module, you need to generate the beans.
+Once your scenario is in place in the `bean-generator-bv` module (e.g. in `bean-generator-bv-3.1`), you need to generate the beans.
 
 From the root directory, run:
 
 ```bash
-pushd bean-generator-bv-1.1
+pushd bean-generator-bv-3.1
 mvn clean install
 popd
 ```
@@ -60,14 +63,14 @@ Assuming root is the current location:
 ```bash
 pushd jmh-benchmarks
 mvn clean package -Phv-current
-mvn package -Phv-6.0
+mvn package -Phv-9.0
 ```
 
 Finally, you can run the benchmarks as follows:
 
 ```bash
 java -jar target/bv-benchmarks-hv-current.jar
-java -jar target/bv-benchmarks-hv-6.0.jar
+java -jar target/bv-benchmarks-hv-9.0.jar
 popd
 ```
 
@@ -88,6 +91,7 @@ java -jar target/bv-benchmarks-${impl}.jar RawValidationSpeedBenchmark
 ## Future
 
 For now, our benchmarks only tests the Bean Validation 1.1 features.
+The Jakarta 3.1 generator is identical to the 1.1 one with the difference in the packages (jakarta vs javax)
 
 It would be also good to have another bean-generator with beans using Bean Validation 2.0
 features and some benchmarks for it.
